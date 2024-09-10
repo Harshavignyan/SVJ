@@ -1,0 +1,105 @@
+/* PadhamResult.css */
+
+/* Background and overall theme */
+body {
+  background-color: #f2e9e1; /* Light cream for a calm, sacred look */
+  font-family: 'Lora', serif; /* Traditional serif font */
+  color: #5b342a; /* Deep brown for a grounded look */
+}
+
+/* Card styling */
+.card {
+  background: #ffffff; /* White background for the card */
+  border: 1px solid #d5a378; /* Golden border for a divine touch */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px; /* Set a maximum width for the card */
+  margin: 0 auto; /* Center the card horizontally */
+}
+
+/* Optional: Make the card responsive */
+@media (max-width: 768px) {
+  .card {
+      max-width: 90%; /* Adjust the width for smaller screens */
+  }
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  color: #8d6e63; /* Warm brown for headings */
+  font-family: 'Playfair Display', serif; /* Elegant serif font for the title */
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* Table styling */
+.table {
+  width: 100%;
+  background-color: #fff8e7; /* Light golden tint background for the table */
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #d5a378; /* Golden border for cells */
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #d5a378; /* Darker golden background for headers */
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.table td {
+  color: #5b342a; /* Deep brown for the text */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f7f2ea; /* Slight alternation of rows */
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: #8d6e63; /* Warm brown color for buttons */
+  border-color: #8d6e63;
+  color: #ffffff;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #5b342a; /* Darker on hover for depth */
+  transform: translateY(-2px);
+}
+
+/* Footer Styling */
+.card-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6d4c41; /* Slightly lighter brown for footer text */
+}
+
+/* PDF download button styling */
+.btn-primary {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+/* Add a subtle hover effect to the card */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading Styling */
+h3 {
+  text-align: center;
+  font-family: 'Playfair Display', serif; /* Devotional elegant font */
+  color: #5b342a;
+}
