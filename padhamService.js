@@ -37,12 +37,17 @@ const calculatePadham = (lengthFeet, lengthInches, widthFeet, widthInches) => {
     // Additional calculations using Math.ceil for rounding
     const dhanam = Math.ceil((totalPadham * 8) % 12);
     const rinam = Math.ceil((totalPadham * 3) % 8);
-    const vaaramu = Math.ceil((totalPadham * 9) % 7);
+    
+    // Wrap vaaramu to 0-6 range
+    const vaaramu = Math.ceil((totalPadham * 9) % 7) % 7; 
+
     const tithi = Math.ceil((totalPadham * 6) % 30);
     const nakshatramu = Math.ceil((totalPadham * 8) % 27);
-    const aayam = Math.ceil((totalPadham * 9) % 8);
+    
+    // Modulo operations with corrected limits
+    const aayam = (Math.ceil((totalPadham * 9) % 8)) % 8; // Limit 0-7
     const aayushu = Math.ceil((totalPadham * 9) % 120);
-    const amsa = Math.ceil((totalPadham * 6) % 9);
+    const amsa = (Math.ceil((totalPadham * 6) % 9)) % 9;  // Limit 0-8
     const dikhpati = Math.ceil(aayushu % 8);
 
     // Respond with the required values, including diagonal in feet and inches

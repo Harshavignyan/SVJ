@@ -24,7 +24,7 @@ const PadhamForm = () => {
       const response = await calculatePadham(values).unwrap();
       dispatch(setResult(response));
 
-      // Navigate to the result page
+      // Navigate to the result page without resetting the form values
       navigate('/result');
     } catch (error) {
       console.error('Error:', error);
@@ -37,7 +37,7 @@ const PadhamForm = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {() => (
+      {({ resetForm }) => (
         <Form>
           {/* Length Fields */}
           <div className="row mb-3">
@@ -67,9 +67,17 @@ const PadhamForm = () => {
             </div>
           </div>
 
-          <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
+          {/* Submit and Reset Buttons */}
+          <div className="text-center">
+            <button type="submit" className="btn btn-primary mx-2">
               Calculate
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary mx-2"
+              onClick={() => resetForm()}
+            >
+              Reset
             </button>
           </div>
         </Form>
