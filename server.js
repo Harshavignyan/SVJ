@@ -69,33 +69,35 @@ app.post("/padham", async (req, res) => {
     // Use the padham service to calculate values
     const result = calculatePadham(lengthFeet, lengthInches, widthFeet, widthInches);
 
-    // Convert numeric values to strings for querying MongoDB
-    const vaaramuKey = result.vaaramu.toString();
-    const tithiKey = result.tithi.toString();
-    const nakshatramuKey = result.nakshatramu.toString();
-    const aayamKey = result.aayam.toString();
-    const amsaKey = result.amsa.toString();
-    const dikhpatiKey = result.dikhpati.toString();
-
     try {
-        // Fetch corresponding values from MongoDB collections
-        const vaaramuResult = await fetchDocumentValue(Vaaramu, vaaramuKey, 'Vaaramu');
-        const tithiResult = await fetchDocumentValue(Tithi, tithiKey, 'Tithi');
-        const nakshatramuResult = await fetchDocumentValue(Nakshatramu, nakshatramuKey, 'Nakshatramu');
-        const aayamResult = await fetchDocumentValue(Aayam, aayamKey, 'Aayam');
-        const amsaResult = await fetchDocumentValue(Amsa, amsaKey, 'Amsa');
-        const dikhpatiResult = await fetchDocumentValue(Dikhpati, dikhpatiKey, 'Dikhpati');
+        // Fetch corresponding values from MongoDB collections using the DB values
+        const vaaramuResult = await fetchDocumentValue(Vaaramu, result._vaaramuDB.toString(), 'Vaaramu');
+        const tithiResult = await fetchDocumentValue(Tithi, result._tithiDB.toString(), 'Tithi');
+        const nakshatramuResult = await fetchDocumentValue(Nakshatramu, result._nakshatramuDB.toString(), 'Nakshatramu');
+        const aayamResult = await fetchDocumentValue(Aayam, result._aayamDB.toString(), 'Aayam');
+        const amsaResult = await fetchDocumentValue(Amsa, result._amsaDB.toString(), 'Amsa');
+        const dikhpatiResult = await fetchDocumentValue(Dikhpati, result._dikhpatiDB.toString(), 'Dikhpati');
 
-        // Add MongoDB values to the response
-        res.json({
+        // Prepare response with display values and fetched data
+        const response = {
             ...result,
-            vaaramu: vaaramuResult,
-            tithi: tithiResult,
-            nakshatramu: nakshatramuResult,
-            aayam: aayamResult,
-            amsa: amsaResult,
-            dikhpati: dikhpatiResult
-        });
+            vaaramu: { ...vaaramuResult, key: result.vaaramu }, // Use display value for key
+            tithi: { ...tithiResult, key: result.tithi },
+            nakshatramu: { ...nakshatramuResult, key: result.nakshatramu },
+            aayam: { ...aayamResult, key: result.aayam },
+            amsa: { ...amsaResult, key: result.amsa },
+            dikhpati: { ...dikhpatiResult, key: result.dikhpati }
+        };
+
+        // Remove the DB lookup fields from the response
+        delete response._vaaramuDB;
+        delete response._tithiDB;
+        delete response._nakshatramuDB;
+        delete response._aayamDB;
+        delete response._amsaDB;
+        delete response._dikhpatiDB;
+
+        res.json(response);
     } catch (error) {
         console.error('Error fetching data from MongoDB:', error);
         res.status(500).send('Internal Server Error');

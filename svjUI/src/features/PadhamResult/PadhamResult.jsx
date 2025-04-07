@@ -1,10 +1,11 @@
 import { useSelector } from 'react-redux';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import './PadhamResult.css'; // Include your CSS
+import './PadhamResult.css';
 
 const PadhamResult = () => {
   const result = useSelector((state) => state.padham.result);
+  const dimensions = useSelector((state) => state.padham.dimensions);
 
   // Function to determine Dhanam and Rinam status
   const getDhanamStatus = (dhanam, rinam) => {
@@ -28,97 +29,113 @@ const PadhamResult = () => {
 
   // Function to generate PDF with result details
   const downloadPDF = () => {
-    const doc = new jsPDF();
-
-    // Define colors for the brown theme
-    const brownColor = [139, 69, 19]; // Dark brown color
-    const lightBrownColor = [210, 180, 140]; // Light brown color for the address
-
-    // Header: Company Information
-    doc.setFontSize(22);
-    doc.setTextColor(...brownColor); // Set color to brown for the company name
-    doc.text('Sri Vani Jyothishalayam', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-
-    doc.setFontSize(12);
-    doc.setTextColor(...lightBrownColor); // Light brown for the address
-    doc.text('Arunchala Shiva Heritage, 3rd cement road, Komarada Rd', doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
-    doc.text('Opposite Aditya Junior college, Bhimavaram, Andhra Pradesh 534208', doc.internal.pageSize.getWidth() / 2, 35, { align: 'center' });
-
-    // Adjust phone number display with emoji
-    doc.setFont('arial', 'normal'); // Or another font that supports emoji
-    doc.text('Contact: (+91) 9704755446', doc.internal.pageSize.getWidth() / 2, 42, { align: 'center' });
-
-    // Add page border
-    const margin = 10;
+    const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    doc.setDrawColor(...brownColor); // Border color
-    doc.setLineWidth(1); // Border width
-    doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
 
-    // Add spacing between the contact information and the tables
-    const spacing = 60; // Adjust this value as needed
-    const startY = 50 + spacing; // Space between header and tables
+    const darkBrown = [94, 52, 18];
+    const accentColor = [139, 69, 19];
+    const lightBeige = [245, 235, 220];
 
-    // First table (Plinth Area to Diagonal)
-    const firstTableRows = [
-      ['Plinth Area of the Building O2O', result.plinthArea],
-      ['Length from Centre to Centre', `${result.centerLengthFeet}' - ${result.centerLengthInches}"`],
-      ['Width from Centre to Centre', `${result.centerWidthFeet}' - ${result.centerWidthInches}"`],
-      ['Length in Decimals', result.lengthInDecimal],
-      ['Width in Decimals', result.widthInDecimal],
-      ['Square Feet of Building C2C', result.squareFeet],
-      ['Total Padam of Building', result.totalPadham],
-      ['Diagonal', `${result.diagonalFeet}' - ${result.diagonalInches}"`], // Diagonal in feet and inches
+    // Background
+    doc.setFillColor(...lightBeige);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+    // Top line: Contact left, Since 1954 right
+    doc.setFontSize(10);
+    doc.setTextColor(...darkBrown);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Contact: (+91) 9704755446', 10, 12);
+    doc.text('Since 1954', pageWidth - 10, 12, { align: 'right' });
+
+    // Title
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sri Vani Jyothishalayam', pageWidth / 2, 25, { align: 'center' });
+
+    // Name
+    doc.setFontSize(16);
+    doc.text('Daivajna Sri Ayaluri Ramkumar Sharma', pageWidth / 2, 33, { align: 'center' });
+
+    // Trusted & Qualifications (in same line, aligned beneath the name smartly)
+    doc.setFontSize(12);
+    doc.setTextColor(...accentColor);
+    doc.text('Trusted by intellectuals', 15, 40); // left side under "Daivajna"
+    doc.setTextColor(...darkBrown);
+    doc.text('BBM, MBA, MA(Astrology)', pageWidth - 15, 40, { align: 'right' }); // right side under name
+
+    // Address: One compressed line
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...darkBrown);
+    const addressText = 'D No: 1-309/3, Arunachala Shiva Heritage, Opp Aditya Jr College, 3rd Left Cement Rd, Komarada Rd, BHIMAVARAM, AP 534208';
+    doc.text(addressText, pageWidth / 2, 48, { align: 'center', maxWidth: pageWidth - 20 });
+
+    // Combined Table Data
+    const tableData = [
+        ['Plinth Area of the Building O2O', result.plinthArea],
+        ['Width Outer to Outer', `${dimensions.widthFeet}' - ${dimensions.widthInches}"`],
+        ['Length Outer to Outer', `${dimensions.lengthFeet}' - ${dimensions.lengthInches}"`],
+        ['Width from Centre to Centre', `${result.centerWidthFeet}' - ${result.centerWidthInches}"`],
+        ['Length from Centre to Centre', `${result.centerLengthFeet}' - ${result.centerLengthInches}"`],
+        ['Width in Decimals', result.widthInDecimal],
+        ['Length in Decimals', result.lengthInDecimal],
+        ['Square Feet of Building C2C', result.squareFeet],
+        ['Total Padam of Building', result.totalPadham],
+        ['Diagonal', `${result.diagonalFeet}' - ${result.diagonalInches}"`],
+        ['Dhanam', `${result.dhanam} (${dhanamStatus})`],
+        ['Rinam', `${result.rinam} (${rinamStatus})`],
+        ['Vaaramu', result.vaaramu ? `${result.vaaramu.key} - ${result.vaaramu.value}` : 'N/A'],
+        ['Tithi', result.tithi ? `${result.tithi.key} - ${result.tithi.value}` : 'N/A'],
+        ['Nakshatramu', result.nakshatramu ? `${result.nakshatramu.key} - ${result.nakshatramu.value}` : 'N/A'],
+        ['Aayam', result.aayam ? `${result.aayam.key} - ${result.aayam.value}` : 'N/A'],
+        ['Aayushu', `${result.aayushu} (${aayushuStatus})`],
+        ['Amsa', result.amsa ? `${result.amsa.key} - ${result.amsa.value}` : 'N/A'],
+        ['Dikhpati', result.dikhpati ? `${result.dikhpati.key} - ${result.dikhpati.value}` : 'N/A']
     ];
 
-    doc.autoTable({
-      head: [['Description', 'Value']],
-      body: firstTableRows,
-      startY: startY, // Below the header
-      theme: 'grid',
-      headStyles: { fillColor: brownColor }, // Brown header color
-      columnStyles: { 0: { cellWidth: 'auto' }, 1: { cellWidth: 'auto' } }, // Equal column widths
-    });
-
-    // Second table (Dhanam to Dikhpati)
-    const secondTableRows = [
-      ['Dhanam', `${result.dhanam} (${dhanamStatus})`],
-      ['Rinam', `${result.rinam} (${rinamStatus})`],
-      ['Vaaramu', result.vaaramu ? `${result.vaaramu.key} - ${result.vaaramu.value}` : 'N/A'],
-      ['Tithi', result.tithi ? `${result.tithi.key} - ${result.tithi.value}` : 'N/A'],
-      ['Nakshatramu', result.nakshatramu ? `${result.nakshatramu.key} - ${result.nakshatramu.value}` : 'N/A'],
-      ['Aayam', result.aayam ? `${result.aayam.key} - ${result.aayam.value}` : 'N/A'],
-      ['Aayushu', `${result.aayushu} (${aayushuStatus})`],
-      ['Amsa', result.amsa ? `${result.amsa.key} - ${result.amsa.value}` : 'N/A'],
-      ['Dikhpati', result.dikhpati ? `${result.dikhpati.key} - ${result.dikhpati.value}` : 'N/A'],
-    ];
-
-    // Calculate the Y position for the second table
-    const secondTableStartY = doc.previousAutoTable.finalY + 10; // Start below the first table
-
-    doc.autoTable({
-      head: [['Field', 'Result']],
-      body: secondTableRows,
-      startY: secondTableStartY, // Start below the first table
-      theme: 'grid',
-      headStyles: { fillColor: brownColor }, // Same brown color
-      columnStyles: { 0: { cellWidth: 'auto' }, 1: { cellWidth: 'auto' } }, // Equal column widths
-    });
-
-    // Footer
+    // Add title for combined table
     doc.setFontSize(14);
-    doc.setTextColor(...brownColor); // Brown color for footer
-    doc.text(
-      'SRI SRI SRI SRI SRI',
-      doc.internal.pageSize.getWidth() / 2,
-      doc.internal.pageSize.getHeight() - 14, // Position at the bottom
-      { align: 'center' }
-    );
+    doc.setTextColor(...darkBrown);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Nava Vargu Ganitam', pageWidth / 2, 58, { align: 'center' });
 
-    // Save PDF
-    doc.save('result_with_branding.pdf');
-  };
+    // Render table
+    doc.autoTable({
+        startY: 62,
+        body: tableData,
+        styles: {
+            font: 'helvetica',
+            fontSize: 12,
+            textColor: darkBrown,
+            halign: 'center',
+            cellPadding: 2
+        },
+        columnStyles: {
+            0: { cellWidth: 90 },
+            1: { cellWidth: 'auto' }
+        },
+        theme: 'plain',
+        margin: { left: 15, right: 15 }
+    });
+
+    // Footer blessings (single line)
+    const blessingLine = 'SHUBHAM BHUYAAT - MANGALAM MAHAT - SRI SRI SRI SRI SRI';
+    doc.setFontSize(12);
+    const finalY = doc.lastAutoTable.finalY;
+    const spaceAboveFooter = pageHeight - 20;
+    const adjustedY = finalY > spaceAboveFooter - 10 ? spaceAboveFooter - 10 : spaceAboveFooter;
+
+    doc.text(blessingLine, pageWidth / 2, adjustedY, { align: 'center' });
+
+    // Copyright
+    doc.setFontSize(9);
+    doc.text('© Sri Vani Jyothishalayam', pageWidth / 2, pageHeight - 8, { align: 'center' });
+
+    // Save
+    doc.save('Sri_Vani_Jyothishalayam_Report.pdf');
+};
+
 
   return (
     <div className="container mt-5">
@@ -144,20 +161,28 @@ const PadhamResult = () => {
                           <td>{result.plinthArea}</td>
                         </tr>
                         <tr>
-                          <td>Length from Centre to Centre</td>
-                          <td>{result.centerLengthFeet}' - {result.centerLengthInches}''</td>
+                          <td>Width Outer to Outer</td>
+                          <td>{dimensions.widthFeet}' - {dimensions.widthInches}"</td>
+                        </tr>
+                        <tr>
+                          <td>Length Outer to Outer</td>
+                          <td>{dimensions.lengthFeet}' - {dimensions.lengthInches}"</td>
                         </tr>
                         <tr>
                           <td>Width from Centre to Centre</td>
                           <td>{result.centerWidthFeet}' - {result.centerWidthInches}''</td>
                         </tr>
                         <tr>
-                          <td>Length in Decimals</td>
-                          <td>{result.lengthInDecimal}</td>
+                          <td>Length from Centre to Centre</td>
+                          <td>{result.centerLengthFeet}' - {result.centerLengthInches}''</td>
                         </tr>
                         <tr>
                           <td>Width in Decimals</td>
                           <td>{result.widthInDecimal}</td>
+                        </tr>
+                        <tr>
+                          <td>Length in Decimals</td>
+                          <td>{result.lengthInDecimal}</td>
                         </tr>
                         <tr>
                           <td>Square Feet of Building C2C</td>

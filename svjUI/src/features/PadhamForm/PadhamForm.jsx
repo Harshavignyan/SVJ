@@ -39,20 +39,6 @@ const PadhamForm = () => {
     >
       {({ resetForm }) => (
         <Form>
-          {/* Length Fields */}
-          <div className="row mb-3">
-            <div className="col">
-              <label className="form-label">Length (Feet)</label>
-              <Field name="lengthFeet" type="number" className="form-control" />
-              <ErrorMessage name="lengthFeet" component="div" className="text-danger" />
-            </div>
-            <div className="col">
-              <label className="form-label">Length (Inches)</label>
-              <Field name="lengthInches" type="number" className="form-control" />
-              <ErrorMessage name="lengthInches" component="div" className="text-danger" />
-            </div>
-          </div>
-
           {/* Width Fields */}
           <div className="row mb-3">
             <div className="col">
@@ -64,6 +50,20 @@ const PadhamForm = () => {
               <label className="form-label">Width (Inches)</label>
               <Field name="widthInches" type="number" className="form-control" />
               <ErrorMessage name="widthInches" component="div" className="text-danger" />
+            </div>
+          </div>
+
+          {/* Length Fields */}
+          <div className="row mb-3">
+            <div className="col">
+              <label className="form-label">Length (Feet)</label>
+              <Field name="lengthFeet" type="number" className="form-control" />
+              <ErrorMessage name="lengthFeet" component="div" className="text-danger" />
+            </div>
+            <div className="col">
+              <label className="form-label">Length (Inches)</label>
+              <Field name="lengthInches" type="number" className="form-control" />
+              <ErrorMessage name="lengthInches" component="div" className="text-danger" />
             </div>
           </div>
 

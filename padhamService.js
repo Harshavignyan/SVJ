@@ -34,24 +34,41 @@ const calculatePadham = (lengthFeet, lengthInches, widthFeet, widthInches) => {
     // Calculate the plinth area (outer to outer)
     const plinthArea = (lengthFeet + (lengthInches / 12)) * (widthFeet + (widthInches / 12));
 
-    // Additional calculations using Math.ceil for rounding
+    // Helper function to handle zero values
+    const getDisplayValue = (value, max) => value === 0 ? max : value;
+    const getDBValue = (value) => value; // Use original value for DB query
+
+    // Calculations
     const dhanam = Math.ceil((totalPadham * 8) % 12);
     const rinam = Math.ceil((totalPadham * 3) % 8);
     
-    // Wrap vaaramu to 0-6 range
-    const vaaramu = Math.ceil((totalPadham * 9) % 7) % 7; 
+    // Vaaramu (0-6) - Sunday to Saturday
+    const vaaramuDB = Math.ceil((totalPadham * 9) % 7) % 7;
+    const vaaramuDisplay = getDisplayValue(vaaramuDB, 7);
 
-    const tithi = Math.ceil((totalPadham * 6) % 30);
-    const nakshatramu = Math.ceil((totalPadham * 8) % 27);
-    
-    // Modulo operations with corrected limits
-    const aayam = (Math.ceil((totalPadham * 9) % 8)) % 8; // Limit 0-7
-    const aayushu = Math.ceil((totalPadham * 9) % 120);
-    const amsa = (Math.ceil((totalPadham * 6) % 9)) % 9;  // Limit 0-8
-    const dikhpati = Math.ceil(aayushu % 8);
+    // Tithi (1-30) - No zero case
+    const tithi = Math.ceil((totalPadham * 6) % 30) || 30;
 
-    // Respond with the required values, including diagonal in feet and inches
+    // Nakshatramu (0-26)
+    const nakshatramuDB = Math.ceil((totalPadham * 8) % 27) % 27;
+    const nakshatramuDisplay = getDisplayValue(nakshatramuDB, 27);
+
+    // Aayam (0-7)
+    const aayamDB = (Math.ceil((totalPadham * 9) % 8)) % 8;
+    const aayamDisplay = getDisplayValue(aayamDB, 8);
+
+    // Aayushu (1-120) - No zero case
+    const aayushu = Math.ceil((totalPadham * 9) % 120) || 120;
+
+    // Amsa (0-8)
+    const amsaDB = (Math.ceil((totalPadham * 6) % 9)) % 9;
+    const amsaDisplay = getDisplayValue(amsaDB, 9);
+
+    // Dikhpati (1-8) - No zero case
+    const dikhpati = Math.ceil(aayushu % 8) || 8;
+
     return {
+        // Dimensions
         centerLengthFeet: newLengthFeet,
         centerLengthInches: newLengthInches.toFixed(1),
         centerWidthFeet: newWidthFeet,
@@ -63,15 +80,25 @@ const calculatePadham = (lengthFeet, lengthInches, widthFeet, widthInches) => {
         squareFeet: squareFeet.toFixed(6),
         totalPadham: totalPadham.toFixed(6),
         plinthArea: plinthArea.toFixed(6),
+        
+        // Values for display
         dhanam: dhanam,
         rinam: rinam,
-        vaaramu: vaaramu,
+        vaaramu: vaaramuDisplay,
         tithi: tithi,
-        nakshatramu: nakshatramu,
-        aayam: aayam,
+        nakshatramu: nakshatramuDisplay,
+        aayam: aayamDisplay,
         aayushu: aayushu,
-        amsa: amsa,
-        dikhpati: dikhpati
+        amsa: amsaDisplay,
+        dikhpati: dikhpati,
+        
+        // Values for DB lookup
+        _vaaramuDB: vaaramuDB,
+        _tithiDB: tithi,
+        _nakshatramuDB: nakshatramuDB,
+        _aayamDB: aayamDB,
+        _amsaDB: amsaDB,
+        _dikhpatiDB: dikhpati
     };
 };
 
